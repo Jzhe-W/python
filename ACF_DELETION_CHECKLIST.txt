@@ -1,0 +1,180 @@
+╔═══════════════════════════════════════════════════════════════╗
+║         ACF柱状图删除清单 - 6个位置需要修改                    ║
+╚═══════════════════════════════════════════════════════════════╝
+
+使用方法：
+1. 在代码编辑器中打开您的程序
+2. 使用 Ctrl+F (查找功能)
+3. 按照下面的顺序搜索并删除/修改
+
+═══════════════════════════════════════════════════════════════
+
+【位置1】ACF对比图和打印输出
+─────────────────────────────────────────────────────────────
+搜索关键词：# === ACF 数据对比 ===
+
+找到后，删除从这行开始：
+    # === ACF 数据对比 ===
+
+一直删除到这行（不包括这行）：
+    # 记录结果
+
+预计删除：约100-120行代码
+
+包含内容：
+  - from statsmodels.tsa.stattools import acf
+  - ACF计算和打印
+  - Figure 8+i的ACF对比图
+  - frame_acf标签页创建
+
+═══════════════════════════════════════════════════════════════
+
+【位置2】results_data字典中的ACF字段
+─────────────────────────────────────────────────────────────
+搜索关键词：'ACF Correlation': acf_corr
+
+找到这两行并删除：
+    'ACF Correlation': acf_corr,
+    'ACF RMSE': acf_rmse,
+
+注意：删除后要确保字典语法正确（逗号位置）
+
+修改前的样子：
+    results_data.append({
+        'Season': season_names[i],
+        'Gen_vs_Real_RMSE': rmse,
+        'Gen_vs_Real_MAE': mae,
+        'Gen_vs_Real_MAPE (%)': mape,
+        'Gen_vs_Real_Correlation': correlation,
+        'ACF Correlation': acf_corr,      ← 删除这行
+        'ACF RMSE': acf_rmse,             ← 删除这行
+        'PICP': picp,
+        'PINAW': pinaw
+    })
+
+修改后：
+    results_data.append({
+        'Season': season_names[i],
+        'Gen_vs_Real_RMSE': rmse,
+        'Gen_vs_Real_MAE': mae,
+        'Gen_vs_Real_MAPE (%)': mape,
+        'Gen_vs_Real_Correlation': correlation,
+        'PICP': picp,
+        'PINAW': pinaw
+    })
+
+═══════════════════════════════════════════════════════════════
+
+【位置3】avg_metrics字典中的ACF字段
+─────────────────────────────────────────────────────────────
+搜索关键词：'ACF Correlation': np.mean
+
+找到这两行并删除：
+    'ACF Correlation': np.mean([float(row['ACF Correlation']) for row in results_data]),
+    'ACF RMSE': np.mean([float(row['ACF RMSE']) for row in results_data]),
+
+修改前的样子：
+    avg_metrics = {
+        'Gen_vs_Real_RMSE': np.mean([...]),
+        'Gen_vs_Real_MAE': np.mean([...]),
+        'Gen_vs_Real_MAPE (%)': np.mean([...]),
+        'Gen_vs_Real_Correlation': np.mean([...]),
+        'ACF Correlation': np.mean([...]),     ← 删除这行
+        'ACF RMSE': np.mean([...]),            ← 删除这行
+        'PICP': np.mean([...]),
+        'PINAW': np.mean([...])
+    }
+
+修改后：
+    avg_metrics = {
+        'Gen_vs_Real_RMSE': np.mean([...]),
+        'Gen_vs_Real_MAE': np.mean([...]),
+        'Gen_vs_Real_MAPE (%)': np.mean([...]),
+        'Gen_vs_Real_Correlation': np.mean([...]),
+        'PICP': np.mean([...]),
+        'PINAW': np.mean([...])
+    }
+
+═══════════════════════════════════════════════════════════════
+
+【位置4】create_acf_correlation_error_plot 函数定义
+─────────────────────────────────────────────────────────────
+搜索关键词：def create_acf_correlation_error_plot
+
+删除整个函数（从def开始到return fig_acf结束）
+
+删除范围：
+def create_acf_correlation_error_plot(real_data, generated_data, season_names, notebook):
+    """创建ACF相关性误差图"""
+    ... (中间所有代码)
+    return fig_acf
+
+预计删除：约150-200行代码
+
+═══════════════════════════════════════════════════════════════
+
+【位置5】ACF函数调用
+─────────────────────────────────────────────────────────────
+搜索关键词：fig_acf = create_acf_correlation_error_plot
+
+删除整个try-except块：
+
+try:
+    fig_acf = create_acf_correlation_error_plot(real_data_for_3d, generated_data_for_3d, season_names, notebook)
+    print("✅ ACF相关性误差图创建成功")
+except Exception as e:
+    print(f"⚠️ ACF相关性误差图创建失败: {e}")
+    fig_acf = None
+
+预计删除：6行代码
+
+═══════════════════════════════════════════════════════════════
+
+【位置6】最后的提示信息（可选修改）
+─────────────────────────────────────────────────────────────
+搜索关键词：ACF相关性误差图'标签页
+
+修改前：
+print("📋 提示：您可以在GUI窗口的'3D相关性误差图'和'ACF相关性误差图'标签页中查看结果")
+
+修改后：
+print("📋 提示：您可以在GUI窗口的'3D相关性误差图'标签页中查看结果")
+
+═══════════════════════════════════════════════════════════════
+
+【验证清单】删除完成后的检查
+─────────────────────────────────────────────────────────────
+□ 1. 搜索 "acf_corr" - 应该找不到任何结果
+□ 2. 搜索 "acf_rmse" - 应该找不到任何结果
+□ 3. 搜索 "frame_acf" - 应该找不到任何结果
+□ 4. 搜索 "Figure 8" - 应该只在3D相关性误差图中出现
+□ 5. 搜索 "from statsmodels" - 应该找不到（或只在注释中）
+□ 6. 运行程序 - 应该没有语法错误
+□ 7. 检查GUI - 不应该有"ACF"相关的标签页
+□ 8. 检查输出表格 - 不应该有"ACF Correlation"和"ACF RMSE"列
+
+═══════════════════════════════════════════════════════════════
+
+【快速删除命令】如果使用支持正则的编辑器（VSCode/Sublime等）
+─────────────────────────────────────────────────────────────
+1. 启用正则表达式模式
+2. 搜索：'ACF.*?:.*?,\n
+   替换为：（空）
+   这会删除所有ACF相关的字典字段
+
+3. 搜索：# === ACF 数据对比 ===[\s\S]*?# 记录结果
+   替换为：# 记录结果
+   这会删除整个ACF对比代码块
+
+注意：使用正则删除前请先备份代码！
+
+═══════════════════════════════════════════════════════════════
+
+预计总共删除：约280-320行代码
+预计修改时间：5-10分钟
+
+删除后程序功能：
+✅ 保留：数据对比图、多样性分析、3D相关性误差图
+❌ 移除：所有ACF柱状图、ACF数值对比、ACF标签页
+
+═══════════════════════════════════════════════════════════════
